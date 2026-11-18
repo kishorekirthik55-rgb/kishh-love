@@ -1,0 +1,3102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12070d">
+  <title>My Soul Will Always Find You</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Marcellus&family=Noto+Serif+Tamil:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --wine-black: #12070d;
+      --deep-wine: #170a10;
+      --wine: #1f0d15;
+      --pink: #ff2d63;
+      --rose: #ff8fab;
+      --soft-pink: #ffd7e2;
+      --gold: #d4af37;
+      --champagne: #f4df9b;
+      --cream: #fbe9ee;
+      --warm-white: #fff7fa;
+      --heart-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 30'%3E%3Cpath d='M16 29S2.5 20 2.5 10A6.6 6.6 0 0116 6.4 6.6 6.6 0 0129.5 10c0 10-13.5 19-13.5 19z' fill='%23ff3b6b'/%3E%3C/svg%3E");
+    }
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: var(--wine-black);
+    }
+
+    body {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      color: var(--cream);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      overscroll-behavior: none;
+    }
+
+    #stage {
+      position: fixed;
+      inset: 0;
+      height: 100dvh;
+      min-height: 100dvh;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 38%, #241019 0%, #1a0b12 42%, #12070d 100%);
+      transition: background 2s ease;
+    }
+
+    #stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, .55) 100%);
+      z-index: 5;
+    }
+
+    #stage.warm {
+      background: radial-gradient(ellipse at 50% 40%, #3a1a22 0%, #26101a 45%, #170a12 100%);
+    }
+
+    /* ---------- ambient ---------- */
+    #ambientParticles {
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .dust {
+      position: absolute;
+      width: var(--s);
+      height: var(--s);
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--warm-white), rgba(244, 223, 155, .45));
+      box-shadow: 0 0 6px rgba(255, 215, 150, .5);
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: dustDrift var(--dur) linear var(--dl) infinite;
+    }
+
+    @keyframes dustDrift {
+      0% {
+        transform: translate3d(0, 0, 0);
+        opacity: 0;
+      }
+
+      12%,
+      88% {
+        opacity: var(--o);
+      }
+
+      50% {
+        transform: translate3d(var(--dx), -46px, 0);
+      }
+
+      100% {
+        transform: translate3d(0, -92px, 0);
+        opacity: 0;
+      }
+    }
+
+    /* ---------- scenes ---------- */
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(1.035);
+      filter: blur(6px);
+      transition: opacity 1.1s ease, transform 1.2s ease, filter 1.1s ease;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .scene.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+      filter: blur(0);
+    }
+
+    .scene.active button {
+      pointer-events: auto;
+    }
+
+    .scene.active .scene-content {
+      pointer-events: none;
+    }
+
+    .scene.active button,
+    .scene.active textarea,
+    .scene.active input,
+    .scene.active a,
+    .scene.active .choice,
+    .scene.active .reply-block,
+    .scene.active .bf-hit {
+      pointer-events: auto;
+    }
+
+    .scene-content {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 440px;
+      min-height: 100dvh;
+      padding-top: max(30px, env(safe-area-inset-top));
+      padding-right: max(22px, env(safe-area-inset-right));
+      padding-bottom: max(30px, env(safe-area-inset-bottom));
+      padding-left: max(22px, env(safe-area-inset-left));
+    }
+
+    .scene-content.has-bf {
+      justify-content: flex-end;
+      padding-bottom: clamp(96px, 21vh, 210px);
+    }
+
+    /* ---------- narration ---------- */
+    .story-line {
+      margin: 0;
+      max-width: 22ch;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: clamp(1.08rem, 4.9vw, 1.62rem);
+      line-height: 1.5;
+      letter-spacing: .012em;
+      color: var(--cream);
+      text-wrap: balance;
+      overflow-wrap: break-word;
+      opacity: 0;
+      transform: translateY(14px);
+      filter: blur(6px);
+      transition: opacity .95s ease, transform .95s ease, filter .95s ease;
+    }
+
+    .story-line.show {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+
+    .story-line.big {
+      font-weight: 600;
+      max-width: 16ch;
+      font-size: clamp(1.55rem, 7vw, 2.4rem);
+      color: var(--warm-white);
+      letter-spacing: .02em;
+      text-shadow: 0 0 24px rgba(255, 143, 171, .35);
+    }
+
+    .story-line.names {
+      font-family: 'Great Vibes', cursive;
+      font-weight: 400;
+      max-width: 14ch;
+      line-height: 1.25;
+      font-size: clamp(1.5rem, 6.6vw, 2.4rem);
+      color: #d4af37;
+      background: linear-gradient(110deg, #9b7424 0%, #d4af37 24%, #fff1b0 46%, #d4af37 68%, #a77b22 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: .03em;
+      filter: blur(6px);
+      text-shadow: 0 0 14px rgba(212, 175, 55, .45), 0 0 34px rgba(244, 223, 155, .22);
+    }
+
+    .story-line.names.show {
+      filter: blur(0);
+      text-shadow: 0 0 10px rgba(212, 175, 55, .5), 0 0 26px rgba(244, 223, 155, .28), 0 0 48px rgba(212, 175, 55, .14);
+    }
+
+    /* keep the heart emoji visible inside gradient-clipped gold text */
+    .story-line.names .nheart {
+      -webkit-text-fill-color: initial;
+      background: none;
+      filter: none;
+    }
+
+    .story-line.hero {
+      font-family: 'Great Vibes', cursive;
+      font-weight: 400;
+      max-width: 12ch;
+      line-height: 1.15;
+      font-size: clamp(2rem, 9.5vw, 3.3rem);
+      color: var(--warm-white);
+      text-shadow: 0 0 30px rgba(255, 143, 171, .5), 0 0 60px rgba(244, 223, 155, .3);
+    }
+
+    /* ---------- formed text ---------- */
+    .formed {
+      position: relative;
+      margin: 0;
+      max-width: 100%;
+      line-height: 1.08;
+      color: var(--warm-white);
+      overflow-wrap: break-word;
+      text-shadow: 0 0 26px rgba(255, 143, 171, .5), 0 0 64px rgba(244, 223, 155, .32);
+    }
+
+    .formed.love {
+      font-family: 'Great Vibes', cursive;
+      font-weight: 400;
+      font-size: clamp(2.1rem, 11vw, 4.6rem);
+    }
+
+    .formed.ask {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .055em;
+      font-size: clamp(1.6rem, 8.6vw, 4.2rem);
+    }
+
+    #loveReveal {
+      position: absolute;
+      left: 50%;
+      top: 44%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      padding-inline: 22px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .formed .ch {
+      display: inline-block;
+      white-space: pre;
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) scale(.2) rotate(var(--rr));
+      filter: blur(7px);
+      transition: opacity .8s ease, transform 1s cubic-bezier(.2, .7, .2, 1), filter .8s ease;
+    }
+
+    .formed.show .ch {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+
+    /* ---------- scene 1 heart ---------- */
+    .heart-wrap {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(.55);
+      transition: opacity 1.6s ease, transform 1.6s cubic-bezier(.2, .8, .3, 1);
+      filter: drop-shadow(0 0 34px rgba(255, 45, 99, .55)) drop-shadow(0 0 70px rgba(255, 45, 99, .28));
+      animation: heartFloat 6s ease-in-out infinite;
+    }
+
+    .heart-wrap.in {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    @keyframes heartFloat {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .big-heart {
+      position: relative;
+      width: 132px;
+      height: 120px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+      min-width: 88px;
+      min-height: 88px;
+      animation: heartBeat 1.9s ease-in-out infinite;
+    }
+
+    .big-heart::before,
+    .big-heart::after {
+      content: "";
+      position: absolute;
+      top: 6px;
+      width: 66px;
+      height: 100px;
+      border-radius: 66px 66px 0 0;
+      background: linear-gradient(150deg, #ff9ab4 0%, #ff2d63 50%, #b3123f 100%);
+      box-shadow: inset 6px -5px 22px rgba(255, 255, 255, .28), inset -6px 8px 26px rgba(150, 0, 40, .32);
+    }
+
+    .big-heart::before {
+      left: 66px;
+      transform: rotate(-45deg);
+      transform-origin: 0 100%;
+    }
+
+    .big-heart::after {
+      left: 0;
+      transform: rotate(45deg);
+      transform-origin: 100% 100%;
+    }
+
+    @keyframes heartBeat {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      14% {
+        transform: scale(1.13);
+      }
+
+      28% {
+        transform: scale(1.0);
+      }
+
+      42% {
+        transform: scale(1.08);
+      }
+
+      56% {
+        transform: scale(1.0);
+      }
+    }
+
+    .s1-line {
+      margin: 6px 0 0;
+      max-width: 30ch;
+      font-size: clamp(1.02rem, 4.7vw, 1.35rem);
+      font-style: italic;
+      font-weight: 500;
+      color: var(--cream);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 1.1s ease, transform 1.1s ease;
+      text-wrap: balance;
+    }
+
+    .s1-line.show {
+      opacity: .92;
+      transform: none;
+    }
+
+    .s1-tap {
+      margin: 0;
+      font-family: 'Marcellus', serif;
+      font-size: .82rem;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+      color: var(--champagne);
+      opacity: 0;
+      transition: opacity 1.1s ease;
+    }
+
+    .s1-tap.show {
+      opacity: .66;
+      animation: tapGlow 2.4s ease-in-out infinite;
+    }
+
+    @keyframes tapGlow {
+
+      0%,
+      100% {
+        opacity: .4;
+      }
+
+      50% {
+        opacity: .85;
+      }
+    }
+
+    /* =========================================================
+   REAL BUTTERFLY FLIGHT SYSTEM  (container = location, inner = flight)
+   ========================================================= */
+    #butterfly {
+      position: absolute;
+      left: 50%;
+      top: 38%;
+      width: min(60vw, 260px);
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      visibility: hidden;
+      z-index: 16;
+      pointer-events: none;
+      filter: drop-shadow(0 14px 34px rgba(0, 0, 0, .55));
+      transition: opacity 1s ease, transform 1.2s cubic-bezier(.2, .7, .2, 1), filter 1s ease;
+    }
+
+    #butterfly.bf--on {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .bf-hit {
+      position: absolute;
+      inset: -55px;
+      border-radius: 50%;
+    }
+
+    .bf-inner {
+      position: relative;
+      width: 100%;
+      height: auto;
+      transform-origin: 50% 55%;
+      animation: butterflyFlight 4.8s ease-in-out infinite;
+    }
+
+    .bf-inner img,
+    .bf-inner svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      transform-origin: 50% 50%;
+      animation: realWingBeat .42s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    @keyframes realWingBeat {
+      0% {
+        transform: scaleX(1) scaleY(1) rotate(0deg);
+      }
+
+      12% {
+        transform: scaleX(.90) scaleY(.98) rotate(-1deg);
+      }
+
+      25% {
+        transform: scaleX(.68) scaleY(.94) rotate(0deg);
+      }
+
+      38% {
+        transform: scaleX(.48) scaleY(.91) rotate(1deg);
+      }
+
+      50% {
+        transform: scaleX(.70) scaleY(.95) rotate(0deg);
+      }
+
+      65% {
+        transform: scaleX(.90) scaleY(.98) rotate(-1deg);
+      }
+
+      78% {
+        transform: scaleX(1) scaleY(1) rotate(0deg);
+      }
+
+      100% {
+        transform: scaleX(1) scaleY(1) rotate(0deg);
+      }
+    }
+
+    @keyframes butterflyFlight {
+      0% {
+        transform: translate3d(0, 0, 0) rotate(-2deg) scale(1);
+      }
+
+      12% {
+        transform: translate3d(-7px, -11px, 0) rotate(-4deg) scale(1.015);
+      }
+
+      25% {
+        transform: translate3d(5px, -20px, 0) rotate(3deg) scale(1.025);
+      }
+
+      38% {
+        transform: translate3d(11px, -7px, 0) rotate(5deg) scale(1.01);
+      }
+
+      50% {
+        transform: translate3d(3px, 5px, 0) rotate(1deg) scale(1);
+      }
+
+      63% {
+        transform: translate3d(-10px, 1px, 0) rotate(-4deg) scale(.995);
+      }
+
+      76% {
+        transform: translate3d(-5px, -13px, 0) rotate(-2deg) scale(1.02);
+      }
+
+      88% {
+        transform: translate3d(6px, -7px, 0) rotate(3deg) scale(1.01);
+      }
+
+      100% {
+        transform: translate3d(0, 0, 0) rotate(-2deg) scale(1);
+      }
+    }
+
+    #butterfly.bf--distant {
+      transform: translate(calc(-50% + 42vw), calc(-50% + 40vh)) scale(.17);
+      filter: blur(4px) drop-shadow(0 0 12px rgba(255, 150, 180, .4));
+      opacity: .55;
+    }
+
+    /* real flight into the screen from the lower-right */
+    #butterfly.bf--enter {
+      animation: butterflyApproach 3.6s cubic-bezier(.22, .62, .24, 1) forwards;
+    }
+
+    @keyframes butterflyApproach {
+      0% {
+        opacity: 0;
+        transform: translate(calc(-50% + 70vw), calc(-50% + 60vh)) scale(.16) rotate(18deg);
+      }
+
+      10% {
+        opacity: .25;
+      }
+
+      20% {
+        opacity: 1;
+        transform: translate(calc(-50% + 58vw), calc(-50% + 48vh)) scale(.24) rotate(13deg);
+      }
+
+      35% {
+        transform: translate(calc(-50% + 43vw), calc(-50% + 35vh)) scale(.38) rotate(8deg);
+      }
+
+      50% {
+        transform: translate(calc(-50% + 26vw), calc(-50% + 19vh)) scale(.58) rotate(-5deg);
+      }
+
+      65% {
+        transform: translate(calc(-50% + 12vw), calc(-50% + 9vh)) scale(.78) rotate(4deg);
+      }
+
+      80% {
+        transform: translate(calc(-50% - 2vw), calc(-50% + 1vh)) scale(.96) rotate(-3deg);
+      }
+
+      92% {
+        transform: translate(-50%, -50%) scale(1.04) rotate(2deg);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+      }
+    }
+
+    #butterfly.bf--up {
+      transform: translate(-50%, -88%) scale(.95);
+    }
+
+    #butterfly.bf--clickable {
+      z-index: 100;
+      pointer-events: auto;
+      cursor: pointer;
+      filter: drop-shadow(0 0 26px rgba(244, 223, 155, .6)) drop-shadow(0 0 48px rgba(255, 143, 171, .4));
+      animation: butterflyGlow 2.4s ease-in-out infinite;
+    }
+
+    @keyframes butterflyGlow {
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 20px rgba(244, 223, 155, .45)) drop-shadow(0 0 40px rgba(255, 143, 171, .3));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 34px rgba(244, 223, 155, .85)) drop-shadow(0 0 62px rgba(255, 143, 171, .55));
+      }
+    }
+
+    /* the soul flies up and away through the top */
+    #butterfly.bf--flyup {
+      animation: butterflyExit 1.6s cubic-bezier(.45, .05, .8, .25) forwards;
+    }
+
+    @keyframes butterflyExit {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -88%) scale(.95) rotate(0deg);
+      }
+
+      12% {
+        transform: translate(calc(-50% + 5px), calc(-88% - 15px)) scale(.96) rotate(-4deg);
+      }
+
+      25% {
+        transform: translate(calc(-50% - 7px), calc(-88% - 45px)) scale(.90) rotate(5deg);
+      }
+
+      40% {
+        transform: translate(calc(-50% + 9px), calc(-88% - 85px)) scale(.78) rotate(-6deg);
+      }
+
+      58% {
+        transform: translate(calc(-50% - 5px), calc(-88% - 140px)) scale(.62) rotate(5deg);
+      }
+
+      76% {
+        opacity: .7;
+        transform: translate(calc(-50% + 8px), calc(-88% - 230px)) scale(.43) rotate(-4deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% - 3px), -175vh) scale(.12) rotate(10deg);
+        filter: blur(3px);
+      }
+    }
+
+    /* the soul crosses the screen during the celebration */
+    #butterfly.bf--cross {
+      animation: butterflyCrossFlight 6s cubic-bezier(.2, .65, .25, 1) forwards;
+    }
+
+    @keyframes butterflyCrossFlight {
+      0% {
+        opacity: 0;
+        transform: translate(calc(-50% - 72vw), calc(-50% + 10vh)) scale(.50) rotate(-12deg);
+      }
+
+      12% {
+        opacity: 1;
+      }
+
+      25% {
+        transform: translate(calc(-50% - 45vw), calc(-50% + 2vh)) scale(.58) rotate(-5deg);
+      }
+
+      40% {
+        transform: translate(calc(-50% - 18vw), calc(-50% - 5vh)) scale(.66) rotate(5deg);
+      }
+
+      55% {
+        transform: translate(-50%, -50%) scale(.72) rotate(-3deg);
+      }
+
+      70% {
+        transform: translate(calc(-50% + 20vw), calc(-50% - 8vh)) scale(.72) rotate(5deg);
+      }
+
+      84% {
+        opacity: 1;
+        transform: translate(calc(-50% + 47vw), calc(-50% - 12vh)) scale(.72) rotate(8deg);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + 75vw), calc(-50% - 18vh)) scale(.65) rotate(12deg);
+      }
+    }
+
+    @media (max-width:767px) {
+      #butterfly {
+        width: min(82vw, 280px);
+      }
+
+      .bf-inner {
+        animation-duration: 4.2s;
+      }
+
+      .bf-inner img,
+      .bf-inner svg {
+        animation-duration: .38s;
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      .bf-inner,
+      .bf-inner img,
+      .bf-inner svg {
+        animation: none !important;
+      }
+    }
+
+    /* ---------- fx layers ---------- */
+    #fxLayer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 34;
+    }
+
+    #glowCore {
+      position: fixed;
+      left: 50%;
+      top: 42%;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(255, 225, 190, .95), rgba(255, 143, 171, .5) 42%, rgba(255, 45, 99, 0) 72%);
+      opacity: 0;
+      filter: blur(6px);
+      pointer-events: none;
+      z-index: 30;
+      transition: opacity 1s ease, width 1.2s ease, height 1.2s ease;
+    }
+
+    #glowCore.glow-tiny {
+      opacity: .75;
+      width: 60px;
+      height: 60px;
+    }
+
+    #glowCore.glow-on {
+      opacity: 1;
+      width: 340px;
+      height: 340px;
+    }
+
+    #glowCore.glow-warm {
+      background: radial-gradient(circle, rgba(255, 235, 205, .95), rgba(255, 120, 150, .45) 45%, rgba(255, 45, 99, 0) 74%);
+    }
+
+    #flash {
+      position: fixed;
+      left: 50%;
+      top: 42%;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(255, 248, 240, 1) 0%, rgba(255, 223, 155, .85) 30%, rgba(255, 143, 171, .4) 55%, rgba(255, 45, 99, 0) 75%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 33;
+      transition: opacity .5s ease, width .8s cubic-bezier(.2, .8, .3, 1), height .8s cubic-bezier(.2, .8, .3, 1);
+    }
+
+    #flash.flash-on {
+      opacity: 1;
+      width: 230vmax;
+      height: 230vmax;
+    }
+
+    .ph {
+      position: absolute;
+      width: var(--sz);
+      height: var(--sz);
+      margin: calc(var(--sz) / -2) 0 0 calc(var(--sz) / -2);
+      background: var(--heart-svg) center/contain no-repeat;
+      filter: drop-shadow(0 0 6px rgba(255, 90, 130, .7));
+      will-change: transform, opacity;
+    }
+
+    .ph.burst {
+      opacity: 0;
+      animation: phBurst var(--dur) cubic-bezier(.15, .7, .3, 1) var(--dl) forwards;
+    }
+
+    @keyframes phBurst {
+      0% {
+        transform: translate(0, 0) scale(.2);
+        opacity: 0;
+      }
+
+      12% {
+        opacity: 1;
+      }
+
+      70% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(var(--scale));
+        opacity: 0;
+      }
+    }
+
+    .ph.return {
+      opacity: 0;
+      animation: phReturn var(--dur) cubic-bezier(.4, 0, .2, 1) var(--dl) forwards;
+    }
+
+    @keyframes phReturn {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0;
+      }
+
+      22% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(.28);
+        opacity: .95;
+        filter: drop-shadow(0 0 12px rgba(255, 215, 170, .95));
+      }
+    }
+
+    .sp {
+      position: absolute;
+      width: var(--s);
+      height: var(--s);
+      margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+      background: radial-gradient(circle, var(--warm-white), rgba(244, 223, 155, .55) 42%, transparent 72%);
+      border-radius: 50%;
+      opacity: 0;
+      box-shadow: 0 0 8px rgba(244, 223, 155, .8);
+      animation: spTw var(--d) ease-in-out var(--dl) 2 alternate;
+    }
+
+    @keyframes spTw {
+      0% {
+        opacity: 0;
+        transform: scale(.3);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.35);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(.5);
+      }
+    }
+
+    .cf {
+      position: absolute;
+      top: -9vh;
+      background: var(--c);
+      opacity: 0;
+      border-radius: 1px;
+      will-change: transform;
+      animation: cfFall var(--d) linear var(--dl) forwards;
+    }
+
+    @keyframes cfFall {
+      0% {
+        transform: translate(0, 0) rotate(0);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: .95;
+      }
+
+      100% {
+        transform: translate(var(--x), 118vh) rotate(var(--r));
+        opacity: .9;
+      }
+    }
+
+    .mini {
+      position: absolute;
+      width: 44px;
+      height: 36px;
+      margin: -18px 0 0 -22px;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation-duration: var(--dur);
+      animation-delay: var(--dl);
+      animation-timing-function: cubic-bezier(.25, .7, .3, 1);
+      animation-fill-mode: forwards;
+      transform: translate(var(--fx), var(--fy)) scale(.2) rotate(var(--rot));
+    }
+
+    .mini svg,
+    .cbf svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      animation: miniFlap .5s ease-in-out infinite;
+      filter: drop-shadow(0 0 4px rgba(212, 175, 55, .55)) drop-shadow(0 0 10px rgba(255, 143, 171, .25));
+    }
+
+    @keyframes miniFlap {
+
+      0%,
+      100% {
+        transform: scaleX(1);
+      }
+
+      50% {
+        transform: scaleX(.42);
+      }
+    }
+
+    @keyframes miniIn {
+      to {
+        opacity: .92;
+        transform: translate(0, 0) scale(var(--sc)) rotate(var(--rot));
+      }
+    }
+
+    @keyframes miniInCurve {
+      0% {
+        opacity: 0;
+        transform: translate(var(--fx), var(--fy)) scale(.2);
+      }
+
+      20% {
+        opacity: .92;
+      }
+
+      60% {
+        transform: translate(calc(var(--fx) * .16), calc(var(--fy) * .4 - 38px)) scale(calc(var(--sc) * .9));
+      }
+
+      100% {
+        opacity: .92;
+        transform: translate(0, 0) scale(var(--sc)) rotate(var(--rot));
+      }
+    }
+
+    @keyframes miniInSpin {
+      0% {
+        opacity: 0;
+        transform: translate(var(--fx), var(--fy)) scale(.2) rotate(-220deg);
+      }
+
+      22% {
+        opacity: .92;
+      }
+
+      100% {
+        opacity: .92;
+        transform: translate(0, 0) scale(var(--sc)) rotate(var(--rot));
+      }
+    }
+
+    .cbf {
+      position: absolute;
+      width: 40px;
+      height: 33px;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: cbfFloat var(--d) ease-in-out var(--dl) infinite alternate;
+    }
+
+    @keyframes cbfFloat {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(var(--sc));
+      }
+
+      16% {
+        opacity: .9;
+      }
+
+      100% {
+        opacity: .78;
+        transform: translate(var(--x), var(--y)) scale(var(--sc));
+      }
+    }
+
+    /* ---------- veil ---------- */
+    #veil {
+      position: fixed;
+      inset: 0;
+      background: #0a0308;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 14;
+      transition: opacity 1.5s ease;
+    }
+
+    #veil.veil-on {
+      opacity: .42;
+    }
+
+    /* ---------- scene 11 ---------- */
+    .mini-heart {
+      width: 46px;
+      height: 46px;
+      background: var(--heart-svg) center/contain no-repeat;
+      opacity: 0;
+      transform: scale(.5);
+      transition: opacity 1.1s ease, transform 1.1s cubic-bezier(.2, .8, .3, 1);
+    }
+
+    .mini-heart.in {
+      opacity: 1;
+      transform: scale(1);
+      animation: softPulse 2.3s ease-in-out infinite;
+    }
+
+    @keyframes softPulse {
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 12px rgba(255, 45, 99, .5));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 24px rgba(255, 143, 171, .85));
+      }
+    }
+
+    .choice {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      width: 100%;
+      margin-top: 12px;
+      opacity: 0;
+      transform: translateY(16px);
+      pointer-events: none;
+      transition: opacity 1s ease, transform 1s ease;
+    }
+
+    .choice.in {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .btn-yes {
+      font-family: 'Marcellus', serif;
+      font-size: 1.14rem;
+      letter-spacing: .03em;
+      color: #2a0713;
+      border: 0;
+      border-radius: 999px;
+      padding: 15px 34px;
+      min-height: 56px;
+      width: min(84vw, 320px);
+      background: linear-gradient(135deg, #ffd7e2 0%, #ff8fab 32%, #ff2d63 78%);
+      box-shadow: 0 12px 32px rgba(255, 45, 99, .45), inset 0 1px 0 rgba(255, 255, 255, .65), inset 0 0 22px rgba(244, 223, 155, .35);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .btn-yes:active {
+      transform: scale(.97);
+    }
+
+    .btn-yes:disabled {
+      opacity: .7;
+    }
+
+    .btn-wait {
+      font-family: 'Marcellus', serif;
+      font-size: .98rem;
+      letter-spacing: .02em;
+      color: var(--rose);
+      background: transparent;
+      border: 1px solid rgba(255, 143, 171, .5);
+      border-radius: 999px;
+      padding: 12px 24px;
+      min-height: 48px;
+      transition: transform .38s cubic-bezier(.3, 1.35, .5, 1), color .3s ease, border-color .3s ease;
+    }
+
+    /* ---------- scene success ---------- */
+    .big-glow-heart {
+      width: 104px;
+      height: 104px;
+      background: var(--heart-svg) center/contain no-repeat;
+      filter: drop-shadow(0 0 30px rgba(255, 45, 99, .6));
+      animation: softPulse 2.2s ease-in-out infinite, heartFloat 5s ease-in-out infinite;
+    }
+
+    /* ---------- audio mute control ---------- */
+    #muteBtn {
+      position: fixed;
+      left: max(12px, env(safe-area-inset-left));
+      bottom: max(12px, env(safe-area-inset-bottom));
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(18, 7, 13, .55);
+      color: var(--champagne);
+      font-size: 15px;
+      line-height: 40px;
+      text-align: center;
+      z-index: 120;
+      cursor: pointer;
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      box-shadow: 0 0 0 1px rgba(244, 223, 155, .2), 0 6px 18px rgba(0, 0, 0, .4);
+      opacity: 0;
+      transform: scale(.7);
+      pointer-events: none;
+      transition: opacity .6s ease, transform .6s cubic-bezier(.2, .8, .3, 1);
+      touch-action: manipulation;
+    }
+    #muteBtn.show {
+      opacity: .5;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+    #muteBtn.show:hover {
+      opacity: .95;
+    }
+    #muteBtn.muted {
+      color: var(--rose);
+    }
+
+    /* ---------- Radha-Krishna memory scene ---------- */
+    #sceneLoveMemory {
+      overflow: hidden;
+      align-items: stretch;
+      justify-content: flex-start;
+    }
+
+    #sceneLoveMemory .lm-content {
+      width: 100%;
+      max-width: 100%;
+      height: 100dvh;
+      min-height: 0;
+      max-height: 100dvh;
+
+      overflow-y: auto;
+      overflow-x: hidden;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+
+      box-sizing: border-box;
+
+      padding-top: max(28px, env(safe-area-inset-top));
+      padding-right: 18px;
+      padding-bottom: max(100px, calc(60px + env(safe-area-inset-bottom)));
+      padding-left: 18px;
+
+      gap: 22px;
+
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+
+      scrollbar-width: none;
+    }
+
+    #sceneLoveMemory .lm-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    .lm-image-wrap {
+      position: relative;
+      width: min(88vw, 340px);
+      max-width: 340px;
+      height: auto;
+      flex: 0 0 auto;
+
+      border-radius: 20px;
+      overflow: hidden;
+
+      margin-top: 8px;
+
+      opacity: 0;
+      transform: scale(.86) translateY(20px);
+      filter: blur(10px);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, .5), 0 0 0 1px rgba(212, 175, 55, .25);
+      transition: opacity 1.9s ease, transform 1.9s cubic-bezier(.2, .8, .3, 1), filter 1.9s ease;
+      background: rgba(0, 0, 0, .18);
+    }
+
+    .lm-image-wrap.in {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      filter: blur(0);
+    }
+
+    #radhaKrishnaImage {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: none;
+      object-fit: contain;
+    }
+
+    .lm-image-fallback {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+      padding: 30px 18px;
+      font-family: 'Noto Serif Tamil', serif;
+      font-size: 1.4rem;
+      text-align: center;
+      color: var(--rose);
+      background: radial-gradient(ellipse at center, rgba(255, 143, 171, .12), transparent 70%);
+    }
+
+    .lm-image-wrap.img-error #radhaKrishnaImage {
+      display: none;
+    }
+
+    .lm-image-wrap.img-error .lm-image-fallback {
+      display: flex;
+    }
+
+    @media (max-width: 380px) {
+      .lm-image-wrap {
+        width: min(86vw, 300px);
+      }
+    }
+
+    @media (min-width: 381px) and (max-width: 767px) {
+      .lm-image-wrap {
+        width: min(88vw, 340px);
+      }
+    }
+
+    .poem {
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 0 0 auto;
+    }
+
+    .poem-line {
+      width: 100%;
+      max-width: 340px;
+      margin: 0;
+      font-family: 'Noto Serif Tamil', 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: clamp(0.98rem, 4.15vw, 1.22rem);
+      line-height: 1.75;
+      text-align: center;
+      overflow-wrap: anywhere;
+      color: var(--cream);
+      opacity: 0;
+      transform: translateY(18px);
+      filter: blur(5px);
+      transition: opacity 1.3s ease, transform 1.3s ease, filter 1.3s ease;
+    }
+
+    .poem-line.show {
+      opacity: .96;
+      transform: none;
+      filter: blur(0);
+    }
+
+    #lmRadhaLine.story-line.names {
+      font-family: 'Noto Serif Tamil', serif;
+      font-size: clamp(1.8rem, 8vw, 2.5rem);
+      line-height: 1.2;
+      max-width: 100%;
+      margin: 4px 0;
+    }
+
+    /* Tamil text must never fall back to an English/cursive font */
+    .tamil-text {
+      font-family: 'Noto Serif Tamil', 'Cormorant Garamond', serif !important;
+    }
+
+    .lm-climax-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      width: 100%;
+      max-width: 340px;
+      flex: 0 0 auto;
+      margin-top: 4px;
+    }
+
+    .lm-climax-line {
+      margin: 0;
+      width: 100%;
+      max-width: 320px;
+      font-family: 'Noto Serif Tamil', serif;
+      font-weight: 500;
+      font-size: clamp(1.12rem, 4.6vw, 1.46rem);
+      line-height: 1.8;
+      text-align: center;
+      color: var(--cream);
+      overflow-wrap: anywhere;
+      opacity: 0;
+      transform: translateY(16px);
+      filter: blur(6px);
+      transition: opacity 1.4s ease, transform 1.4s ease, filter 1.4s ease;
+    }
+
+    .lm-climax-line.show {
+      opacity: .97;
+      transform: none;
+      filter: blur(0);
+    }
+
+    .lm-hero-line {
+      margin: 8px 0 0;
+      width: 100%;
+      max-width: 320px;
+      font-family: 'Noto Serif Tamil', serif;
+      font-weight: 600;
+      font-size: clamp(1.65rem, 7.4vw, 2.5rem);
+      line-height: 1.45;
+      text-align: center;
+      color: var(--warm-white);
+      overflow-wrap: anywhere;
+      text-shadow: 0 0 26px rgba(255, 143, 171, .55), 0 0 60px rgba(244, 223, 155, .35);
+      opacity: 0;
+      transform: translateY(20px) scale(.96);
+      filter: blur(8px);
+      transition: opacity 2.4s ease, transform 2.4s cubic-bezier(.2, .8, .3, 1), filter 2.4s ease;
+    }
+
+    .lm-hero-line.show {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+
+    .reply-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      max-width: 360px;
+      flex: 0 0 auto;
+      padding-bottom: 8px;
+      opacity: 0;
+      transform: translateY(14px);
+      pointer-events: none;
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    .reply-block.show {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    #loveReply {
+      width: 100%;
+      min-height: 120px;
+      max-height: 240px;
+      resize: vertical;
+      box-sizing: border-box;
+      border-radius: 16px;
+      border: 1px solid rgba(212, 175, 55, .35);
+      background: rgba(255, 247, 250, .07);
+      color: var(--cream);
+      font-family: 'Noto Serif Tamil', 'Cormorant Garamond', serif;
+      font-size: 16px;
+      padding: 15px;
+      line-height: 1.6;
+      outline: none;
+    }
+
+    #loveReply::placeholder {
+      color: rgba(251, 233, 238, .45);
+    }
+
+    #sendReplyBtn {
+      font-family: 'Marcellus', serif;
+      font-size: 1rem;
+      letter-spacing: .02em;
+      color: #2a0713;
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 28px;
+      min-height: 52px;
+      width: min(86vw, 300px);
+      flex: 0 0 auto;
+      background: linear-gradient(135deg, #ffd7e2 0%, #ff8fab 32%, #ff2d63 78%);
+      box-shadow: 0 10px 26px rgba(255, 45, 99, .4), inset 0 1px 0 rgba(255, 255, 255, .6);
+      transition: transform .25s ease, opacity .25s ease;
+    }
+
+    #sendReplyBtn:active {
+      transform: scale(.97);
+    }
+
+    #sendReplyBtn:disabled {
+      opacity: .65;
+    }
+
+    .reply-note {
+      min-height: 1.4em;
+      margin: 0;
+      font-size: .92rem;
+      font-style: italic;
+      color: var(--rose);
+      opacity: 0;
+      transition: opacity .6s ease;
+    }
+
+    .reply-note.show {
+      opacity: .95;
+    }
+
+    .saved-reply-card {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-width: 360px;
+      flex: 0 0 auto;
+      box-sizing: border-box;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      padding: 22px 20px;
+      border-radius: 18px;
+      background: linear-gradient(155deg, rgba(31, 13, 21, .92), rgba(23, 10, 16, .92));
+      border: 1px solid rgba(212, 175, 55, .4);
+      box-shadow: 0 0 0 1px rgba(255, 143, 171, .12), 0 18px 40px rgba(0, 0, 0, .5), 0 0 30px rgba(255, 143, 171, .15);
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 1.1s ease, transform 1.1s ease;
+    }
+
+    .saved-reply-card.show {
+      opacity: 1;
+      transform: none;
+    }
+
+    .saved-reply-card h3 {
+      margin: 0;
+      font-family: 'Great Vibes', cursive;
+      font-weight: 400;
+      font-size: 1.6rem;
+      color: var(--champagne);
+      text-align: center;
+    }
+
+    #savedReplyMessage {
+      margin: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      font-family: 'Noto Serif Tamil', 'Cormorant Garamond', serif;
+      font-size: 1.02rem;
+      line-height: 1.6;
+      color: var(--warm-white);
+      text-align: center;
+    }
+
+    .saved-reply-footer {
+      text-align: center;
+      font-family: 'Great Vibes', cursive;
+      font-size: 1.2rem;
+      color: var(--gold);
+    }
+
+    #sceneLoveMemory .story-line,
+    #sceneLoveMemory .story-line.big {
+      flex: 0 0 auto;
+    }
+
+    #firebaseStatus {
+      position: fixed;
+      top: max(8px, env(safe-area-inset-top));
+      right: max(10px, env(safe-area-inset-right));
+      max-width: 60vw;
+      font-size: .66rem;
+      letter-spacing: .04em;
+      color: rgba(244, 223, 155, .55);
+      text-align: right;
+      z-index: 121;
+      pointer-events: none;
+      opacity: .85;
+    }
+
+    #ownerPreviewBtn {
+      position: fixed;
+      left: max(12px, env(safe-area-inset-left));
+      top: max(10px, env(safe-area-inset-top));
+      z-index: 130;
+      font-size: .7rem;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(212, 175, 55, .4);
+      background: rgba(18, 7, 13, .7);
+      color: var(--champagne);
+      cursor: pointer;
+    }
+
+    @media (min-width:768px) {
+      #sceneLoveMemory .lm-content {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .lm-image-wrap {
+        width: min(78vw, 420px);
+      }
+
+      .poem-line {
+        font-size: clamp(1.15rem, 2vw, 1.4rem);
+      }
+    }
+
+    /* ---------- dev ---------- */
+    #devSkip {
+      position: fixed;
+      right: 2px;
+      bottom: 2px;
+      width: 26px;
+      height: 20px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: transparent;
+      opacity: 0;
+      z-index: 9999;
+    }
+
+    /* ---------- desktop adaptation ---------- */
+    @media (min-width:768px) {
+      .scene-content {
+        max-width: 640px;
+        gap: 22px;
+      }
+
+      .story-line {
+        font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+        max-width: 30ch;
+      }
+
+      .story-line.big {
+        font-size: clamp(2.2rem, 3.6vw, 3rem);
+      }
+
+      #butterfly {
+        width: min(38vw, 360px);
+        top: 36%;
+      }
+
+      .scene-content.has-bf {
+        padding-bottom: clamp(120px, 18vh, 220px);
+      }
+
+      .formed.love {
+        font-size: clamp(4rem, 8vw, 6rem);
+      }
+
+      .formed.ask {
+        font-size: clamp(3.4rem, 7vw, 5.4rem);
+      }
+
+      .mini {
+        width: 46px;
+        height: 38px;
+      }
+    }
+
+    /* ---------- reduced motion ---------- */
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .2s !important;
+      }
+
+      .bf-inner,
+     .bf-inner img,
+.bf-inner svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    transform-origin: 50% 50%;
+    animation: realWingBeat .42s ease-in-out infinite;
+    will-change: transform;
+}
+
+      .scene {
+        filter: none !important;
+        transform: none !important;
+      }
+    }
+
+    /* ---------- sceneLoveMemory scroll fix (mobile swipe/scroll) ---------- */
+    #sceneLoveMemory {
+      overflow: hidden !important;
+      pointer-events: none;
+    }
+
+    #sceneLoveMemory.active {
+      pointer-events: auto !important;
+    }
+
+    #sceneLoveMemory .lm-content {
+      pointer-events: auto !important;
+
+      width: 100%;
+      height: 100dvh;
+      min-height: 0;
+      max-height: 100dvh;
+
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+
+      box-sizing: border-box;
+
+      padding-top: max(28px, env(safe-area-inset-top));
+      padding-right: 18px;
+      padding-bottom: max(140px, calc(100px + env(safe-area-inset-bottom)));
+      padding-left: 18px;
+
+      gap: 22px;
+
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
+
+      scrollbar-width: none;
+    }
+
+    #sceneLoveMemory .lm-content::-webkit-scrollbar {
+      display: none;
+    }
+
+    #sceneLoveMemory .lm-content > * {
+      pointer-events: auto;
+      flex-shrink: 0;
+    }
+
+    #sceneLoveMemory .lm-image-wrap,
+    #sceneLoveMemory .poem,
+    #sceneLoveMemory .reply-block,
+    #sceneLoveMemory .saved-reply-card {
+      flex-shrink: 0;
+    }
+
+    #sceneLoveMemory .reply-block {
+      pointer-events: auto !important;
+    }
+
+    #sceneLoveMemory #loveReply {
+      pointer-events: auto !important;
+      touch-action: auto;
+    }
+
+    #sceneLoveMemory #sendReplyBtn {
+      pointer-events: auto !important;
+      touch-action: manipulation;
+    }
+
+    @media (max-width: 380px) {
+      #sceneLoveMemory .lm-content {
+        padding-left: 14px;
+        padding-right: 14px;
+        padding-bottom: 150px;
+        gap: 18px;
+      }
+
+      #sceneLoveMemory .lm-image-wrap {
+        width: min(86vw, 300px);
+      }
+
+      #sceneLoveMemory .poem {
+        max-width: 310px;
+      }
+
+      #sceneLoveMemory .poem-line {
+        font-size: .98rem;
+        line-height: 1.7;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- BACKGROUND MUSIC -->
+  <audio id="bgMusic" preload="auto" loop>
+    <source src="love-song.mp3" type="audio/mpeg">
+  </audio>
+
+  <div id="stage">
+
+    <div id="ambientParticles"></div>
+    <div id="veil"></div>
+
+    <div id="butterfly" aria-hidden="true">
+      <div class="bf-hit"></div>
+      <div class="bf-inner">
+        <img id="bfImg" src="images/butterfly.png" alt="Butterfly">
+      </div>
+    </div>
+
+    <section id="scene1" class="scene active">
+      <div class="container scene-content">
+        <div class="heart-wrap" id="heartWrap">
+          <button class="big-heart" id="heartBtn" type="button" aria-label="tap my heart"></button>
+        </div>
+        <p class="s1-line" id="s1line1"></p>
+        <p class="s1-tap" id="s1tap">tap my heart</p>
+      </div>
+      <h1 class="formed love" id="loveReveal" aria-hidden="true"></h1>
+    </section>
+
+    <section id="scene2" class="scene">
+      <div class="container scene-content has-bf">
+        <p class="story-line" id="s2line"></p>
+      </div>
+    </section>
+
+    <section id="scene3" class="scene">
+      <div class="container scene-content has-bf">
+        <p class="story-line" id="s3line"></p>
+      </div>
+    </section>
+
+    <section id="scene4" class="scene">
+      <div class="container scene-content has-bf">
+        <p class="story-line" id="s4line"></p>
+      </div>
+    </section>
+
+    <section id="scene5" class="scene">
+      <div class="container scene-content has-bf">
+        <p class="story-line" id="s5line"></p>
+      </div>
+    </section>
+
+    <section id="scene6" class="scene">
+      <div class="container scene-content"></div>
+    </section>
+
+    <section id="scene7" class="scene">
+      <div class="container scene-content has-bf">
+        <p class="story-line" id="s7line"></p>
+      </div>
+    </section>
+
+    <section id="scene8" class="scene">
+      <div class="container scene-content"></div>
+    </section>
+
+    <section id="scene9" class="scene">
+      <div class="container scene-content">
+        <h1 class="formed ask" id="s9a"></h1>
+        <h1 class="formed ask" id="s9b"></h1>
+      </div>
+    </section>
+
+    <section id="scene10" class="scene">
+      <div class="container scene-content">
+        <p class="story-line" id="s10line"></p>
+      </div>
+    </section>
+
+    <section id="scene11" class="scene">
+      <div class="container scene-content">
+        <div class="mini-heart" id="s11heart"></div>
+        <p class="story-line" id="s11line"></p>
+        <div class="choice" id="choice">
+          <button class="btn btn-yes" id="yesBtn" type="button">Yes, I will &#128141;</button>
+          <button class="btn btn-wait" id="waitBtn" type="button">Give me a moment</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="sceneSuccess" class="scene">
+      <div class="container scene-content">
+        <div class="big-glow-heart" id="succHeart"></div>
+        <p class="story-line" id="succLine"></p>
+      </div>
+    </section>
+
+    <section id="sceneLoveMemory" class="scene">
+      <div class="container scene-content lm-content" id="lmContent">
+        <div class="lm-image-wrap" id="lmImageWrap">
+          <img id="radhaKrishnaImage" src="images/radha-krishna-love.jpg" alt="Radha and Krishna">
+          <div class="lm-image-fallback" id="lmImageFallback">🌸 ராதா கிருஷ்ணா 🌸</div>
+        </div>
+
+        <p class="story-line names" id="lmRadhaLine"></p>
+
+        <div class="poem" id="poemBlock">
+          <p class="poem-line" id="poem1">உன்னை நான் காதலித்தது<br>உன் அழகிற்காக மட்டும் அல்ல…</p>
+          <p class="poem-line" id="poem2">என் மனம் அமைதியாகும் இடம்<br>உன் அருகில் என்பதற்காக.</p>
+          <p class="poem-line" id="poem3">உலகம் என்னை விட்டு விலகினாலும்,<br>என் உயிர் உன்னை விட்டு விலகாது.</p>
+          <p class="poem-line" id="poem4">இந்தப் பிறவி முடிந்தாலும்<br>நம் காதல் முடிய வேண்டியதில்லை…</p>
+          <p class="poem-line" id="poem5">மீண்டும் ஒரு பிறவி இருந்தால்,<br>நான் கேட்கும் வரம் ஒன்றே —</p>
+          <p class="poem-line" id="poem6">மீண்டும் உன்னைச் சந்திக்க வேண்டும்.<br>மீண்டும் உன்னை நேசிக்க வேண்டும்.<br>மீண்டும் உன்னையே என் உலகமாக்க வேண்டும்.</p>
+          <p class="poem-line" id="poem7">நான் கிருஷ்ணனாகப் பிறந்தால்,<br>என் மனம் தேடும் ராதா நீயாகவே இருக்க வேண்டும்…</p>
+          <p class="poem-line" id="poem8">நான் பட்டாம்பூச்சியாகப் பிறந்தால்,<br>உலகம் முழுவதும் மலர்கள் இருந்தாலும்,<br>என் சிறகுகள் வந்து அமரும் மலர்<br>நீயாகவே இருக்க வேண்டும்.</p>
+          <p class="poem-line" id="poem9">ஒருநாள் நான் இல்லாமல் போனாலும்…<br>என் காதல் மட்டும்<br>உன் நினைவில் உயிரோடு இருக்கட்டும்.</p>
+          <p class="poem-line" id="poem10">ஏனென்றால்…</p>
+          <p class="poem-line" id="poem11">நான் உன்னை காதலித்தது<br>இந்த வாழ்க்கைக்காக மட்டும் அல்ல.</p>
+          <p class="poem-line" id="poem12">எத்தனை பிறவிகள் வந்தாலும்,<br>என் உயிர் தேடும் ஒரே முகம்…<br>நீ தான். ❤️</p>
+          <p class="poem-line" id="poem13">என்றும் உன் கிருஷ்ணன்…<br>உன்னைத் தேடும் என் ராதா. 🦋</p>
+        </div>
+
+        <div class="lm-climax-block" id="lmClimaxBlock">
+          <p class="lm-climax-line" id="lmClimax1"></p>
+          <p class="lm-climax-line" id="lmClimax2"></p>
+          <p class="lm-climax-line" id="lmClimax3"></p>
+          <p class="lm-hero-line" id="lmHeroFinal"></p>
+        </div>
+
+        <div class="reply-block" id="replyBlock">
+          <textarea id="loveReply" maxlength="1000" placeholder="என் மனதில் இருப்பது…"></textarea>
+          <button id="sendReplyBtn" type="button">என் பதில் ❤️</button>
+          <p class="reply-note" id="replyNote"></p>
+        </div>
+
+        <div class="saved-reply-card" id="savedReplyCard">
+          <h3>உன் ராதாவின் பதில் ❤️</h3>
+          <p id="savedReplyMessage"></p>
+          <div class="saved-reply-footer">— PRIYANKA ❤️</div>
+        </div>
+
+        <p class="story-line" id="lmFinalLine1"></p>
+        <p class="story-line names" id="lmFinalLine2"></p>
+      </div>
+      <audio id="memoryMusic" src="msf1000319695(2).mp3" preload="auto" loop></audio>
+    </section>
+
+    <div id="firebaseStatus"></div>
+
+    <div id="glowCore"></div>
+    <div id="flash"></div>
+    <div id="fxLayer"></div>
+
+    <!-- Music starts softly on the first heart tap (never before). Keep love-song.mp3 next to this file. -->
+    <button id="muteBtn" type="button" aria-label="Mute or unmute music">🔊</button>
+
+    <!-- REMOVE BEFORE SENDING TO RECIPIENT -->
+    <button id="devSkip" type="button" tabindex="-1">SKIP</button>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      // ========================================
+      // PERSONALIZE THESE TWO VALUES
+      // ========================================
+
+      const HIS_NAME = "KISHORE";
+      const HER_NAME = "PRIYANKA";
+
+      // ----------------------------------------
+      // Easily editable text
+      // ----------------------------------------
+      const TEXT = {
+        opening: "There's something my heart has been trying to tell you...",
+        imperfect: "I don't know if I'm the perfect person for you.",
+        soul: "If my soul ever had to find you again...",
+        butterfly: "I think it would come back as a butterfly.",
+        final: "Will you marry me?"
+      };
+
+      const NAMES = HIS_NAME + " ❤️ " + HER_NAME;
+      const NAMES_HTML = HIS_NAME + "<br><span class=\"nheart\">❤️</span><br>" + HER_NAME;
+
+      // ----------------------------------------
+      // environment / performance
+      // ----------------------------------------
+      const RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const HOVER = window.matchMedia("(hover: hover)").matches;
+      const SMALL = window.innerWidth < 380 || (navigator.hardwareConcurrency || 8) <= 4;
+
+      function scaleCount(n) {
+        let c = n;
+        if (SMALL) c = Math.round(n * 0.62);
+        if (RM) c = Math.round(c * 0.4);
+        return Math.max(5, c);
+      }
+
+      const hold = (ms) => new Promise((res) => setTimeout(res, ms));
+
+      // ----------------------------------------
+      // elements
+      // ----------------------------------------
+      const stage = document.getElementById("stage");
+      const fxLayer = document.getElementById("fxLayer");
+      const glowCore = document.getElementById("glowCore");
+      const flash = document.getElementById("flash");
+      const veil = document.getElementById("veil");
+      const ambient = document.getElementById("ambientParticles");
+      const btfly = document.getElementById("butterfly");
+      const bfImg = document.getElementById("bfImg");
+      const bgMusic = document.getElementById("bgMusic");
+      const muteBtn = document.getElementById("muteBtn");
+
+      const BF_SVG = '<svg viewBox="0 0 120 104" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+        + '<g stroke="#f0d17a" stroke-width="2" stroke-linejoin="round">'
+        + '<path d="M60 54C34 6 2 12 10 42C0 72 34 82 60 56Z" fill="#2b1d0d"/>'
+        + '<path d="M60 54C86 6 118 12 110 42C120 72 86 82 60 56Z" fill="#2b1d0d"/>'
+        + '<path d="M60 56C46 70 40 96 56 100C60 96 60 74 60 56Z" fill="#33230f"/>'
+        + '<path d="M60 56C74 70 80 96 64 100C60 96 60 74 60 56Z" fill="#33230f"/>'
+        + '</g>'
+        + '<g fill="none" stroke="#f4df9b" stroke-width="1.6" opacity=".85">'
+        + '<path d="M54 46C40 34 26 30 16 34"/><path d="M66 46C80 34 94 30 104 34"/>'
+        + '<path d="M56 72C48 78 44 88 46 94"/><path d="M64 72C72 78 76 88 74 94"/>'
+        + '</g>'
+        + '<ellipse cx="60" cy="58" rx="3.6" ry="16" fill="#150c06" stroke="#e8c766" stroke-width=".8"/>'
+        + '<path d="M57 38C52 20 47 12 42 8M63 38C68 20 73 12 78 8" fill="none" stroke="#e8c766" stroke-width="1.2" stroke-linecap="round"/>'
+        + '<circle cx="42" cy="8" r="2.2" fill="#d4af37"/><circle cx="78" cy="8" r="2.2" fill="#d4af37"/>'
+        + '</svg>';
+
+      bfImg.addEventListener("error", function () {
+        const inner = btfly.querySelector(".bf-inner");
+        if (inner) inner.innerHTML = BF_SVG;
+      });
+
+      // ----------------------------------------
+      // Radha-Krishna image: graceful fallback if the exact filename/
+      // extension differs, without ever breaking the memory scene
+      // ----------------------------------------
+      (function setupLoveImageFallback() {
+        const img = document.getElementById("radhaKrishnaImage");
+        const wrap = document.getElementById("lmImageWrap");
+        if (!img || !wrap) return;
+        const candidates = [
+          "images/radha-krishna-love.jpg",
+          "images/radha-krishna-love.jpeg",
+          "images/radha-krishna-love.JPG",
+          "images/radha-krishna-love.png"
+        ];
+        let idx = candidates.indexOf(img.getAttribute("src"));
+        if (idx === -1) idx = 0;
+        img.addEventListener("error", function tryNext() {
+          idx++;
+          if (idx < candidates.length) {
+            img.src = candidates[idx];
+          } else {
+            wrap.classList.add("img-error");
+            img.removeEventListener("error", tryNext);
+          }
+        });
+      })();
+
+      // ----------------------------------------
+      // music  (begins on the first heart tap, never on load)
+      // ----------------------------------------
+      let musicStarted = false;
+      let musicFade = null;
+
+      function fadeMusicTo(target, ms) {
+        if (!bgMusic || !musicStarted) return;
+        if (musicFade) clearInterval(musicFade);
+        const from = bgMusic.volume;
+        const steps = Math.max(1, Math.round(ms / 60));
+        let i = 0;
+        musicFade = setInterval(function () {
+          i++;
+          bgMusic.volume = Math.min(1, Math.max(0, from + (target - from) * (i / steps)));
+          if (i >= steps) { clearInterval(musicFade); musicFade = null; }
+        }, 60);
+      }
+
+      function startMusic() {
+        if (musicStarted || !bgMusic) return;
+        musicStarted = true;
+        bgMusic.volume = 0;
+        const played = bgMusic.play();
+        if (played && played.then) {
+          played.then(function () {
+            muteBtn.classList.add("show");
+            fadeMusicTo(0.5, 2600);
+          }).catch(function () {
+            musicStarted = false;
+          });
+        } else {
+          muteBtn.classList.add("show");
+          fadeMusicTo(0.5, 2600);
+        }
+      }
+
+      const memoryMusic = document.getElementById("memoryMusic");
+      if (memoryMusic) {
+        memoryMusic.addEventListener("error", function () {
+          console.warn("love-memory.mp3 could not be loaded — the memory scene will continue silently.");
+        });
+      }
+
+      if (muteBtn) {
+        muteBtn.addEventListener("click", function () {
+          if (!bgMusic) return;
+          const nowMuted = !bgMusic.muted;
+          bgMusic.muted = nowMuted;
+          if (memoryMusic) memoryMusic.muted = nowMuted;
+          muteBtn.classList.toggle("muted", nowMuted);
+          muteBtn.textContent = nowMuted ? "🔇" : "🔊";
+        });
+      }
+
+      // ----------------------------------------
+      // memory-scene music crossfade (love-memory.mp3)
+      // ----------------------------------------
+      let memoryMusicStarted = false;
+      let memoryFadeInterval = null;
+
+      function fadeElementVolume(el, target, ms, cb) {
+        if (!el) { if (cb) cb(); return; }
+        if (memoryFadeInterval) clearInterval(memoryFadeInterval);
+        const from = el.volume;
+        const steps = Math.max(1, Math.round(ms / 60));
+        let i = 0;
+        memoryFadeInterval = setInterval(function () {
+          i++;
+          el.volume = Math.min(1, Math.max(0, from + (target - from) * (i / steps)));
+          if (i >= steps) { clearInterval(memoryFadeInterval); memoryFadeInterval = null; if (cb) cb(); }
+        }, 60);
+      }
+
+      function startMemoryMusic() {
+        if (memoryMusicStarted || !memoryMusic) return;
+        memoryMusicStarted = true;
+        memoryMusic.muted = !!(bgMusic && bgMusic.muted);
+        memoryMusic.volume = 0;
+        const played = memoryMusic.play();
+        const armRetry = function () {
+          function retry() {
+            memoryMusic.play().then(function () {
+              muteBtn.classList.add("show");
+              fadeElementVolume(memoryMusic, 0.55, 3000);
+            }).catch(function () {});
+            document.removeEventListener("pointerdown", retry);
+          }
+          document.addEventListener("pointerdown", retry, { passive: true });
+        };
+        if (played && played.then) {
+          played.then(function () {
+            muteBtn.classList.add("show");
+            fadeElementVolume(memoryMusic, 0.55, 3000);
+          }).catch(function () {
+            memoryMusicStarted = false;
+            armRetry();
+          });
+        } else {
+          fadeElementVolume(memoryMusic, 0.55, 3000);
+        }
+      }
+
+      // fade the proposal song out, then fade the memory song in — never both at full volume
+      function crossToMemoryMusic() {
+        if (bgMusic && musicStarted) {
+          fadeMusicTo(0, 2200);
+          setTimeout(function () { try { bgMusic.pause(); } catch (e) { /* ignore */ } }, 2350);
+        }
+        startMemoryMusic();
+      }
+
+      // safety net: if the very first play() is blocked, the next tap anywhere starts it
+      document.addEventListener("pointerdown", function armMusic() {
+        startMusic();
+        if (musicStarted) document.removeEventListener("pointerdown", armMusic);
+      }, { passive: true });
+
+      // ----------------------------------------
+      // director
+      // ----------------------------------------
+      let RUN = 0;
+      let current = "scene1";
+      let minis = [];
+      let soulArmed = false;
+
+      const order = ["scene1", "scene2", "scene3", "scene4", "scene5", "scene6", "scene7", "scene8", "scene9", "scene10", "scene11", "sceneSuccess", "sceneLoveMemory"];
+
+      function goTo(id) {
+        RUN++;
+        const my = RUN;
+        current = id;
+        document.querySelectorAll(".scene").forEach(function (s) {
+          s.classList.toggle("active", s.id === id);
+        });
+        const fn = enters[id];
+        if (fn) requestAnimationFrame(function () { fn(my); });
+      }
+
+      function alive(my) { return my === RUN; }
+
+      async function story(lineEl, steps, my) {
+        for (let i = 0; i < steps.length; i++) {
+          if (!alive(my)) return false;
+          const st = steps[i];
+          if (st.html) lineEl.innerHTML = st.t; else lineEl.textContent = st.t;
+          lineEl.className = "story-line" + (st.c ? " " + st.c : "");
+          void lineEl.offsetWidth;
+          lineEl.classList.add("show");
+          await hold(st.h || 2600);
+          if (!alive(my)) return false;
+          lineEl.classList.remove("show");
+          await hold(660);
+          if (!alive(my)) return false;
+        }
+        return true;
+      }
+
+      function setLine(lineEl, text, cls) {
+        lineEl.textContent = text;
+        lineEl.className = "story-line" + (cls ? " " + cls : "");
+        void lineEl.offsetWidth;
+        lineEl.classList.add("show");
+      }
+
+      // ----------------------------------------
+      // formed text (assembled from particles)
+      // ----------------------------------------
+      function revealFormed(el, text) {
+        el.classList.remove("show");
+        el.innerHTML = "";
+        const frag = document.createDocumentFragment();
+        const chars = Array.from(text);
+        for (let i = 0; i < chars.length; i++) {
+          if (chars[i] === " ") { frag.appendChild(document.createTextNode(" ")); continue; }
+          const s = document.createElement("span");
+          s.className = "ch";
+          s.textContent = chars[i];
+          const a = Math.random() * Math.PI * 2;
+          const r = 16 + Math.random() * 40;
+          s.style.setProperty("--dx", (Math.cos(a) * r).toFixed(1) + "px");
+          s.style.setProperty("--dy", (Math.sin(a) * r).toFixed(1) + "px");
+          s.style.setProperty("--rr", (Math.random() * 90 - 45).toFixed(1) + "deg");
+          s.style.transitionDelay = (i * 45) + "ms";
+          frag.appendChild(s);
+        }
+        el.appendChild(frag);
+        void el.offsetWidth;
+        el.classList.add("show");
+        createSparkles(scaleCount(16), window.innerWidth / 2, window.innerHeight * 0.45, 150);
+      }
+
+      // ----------------------------------------
+      // particle system
+      // ----------------------------------------
+      function clearParticles() {
+        fxLayer.innerHTML = "";
+        minis = [];
+      }
+
+      function createHeartBurst(cx, cy, n) {
+        const reach = Math.min(window.innerWidth, window.innerHeight) * 0.44;
+        for (let i = 0; i < n; i++) {
+          const h = document.createElement("div");
+          h.className = "ph burst";
+          const ang = Math.random() * Math.PI * 2;
+          const r = 80 + Math.random() * reach;
+          h.style.left = cx + "px";
+          h.style.top = cy + "px";
+          h.style.setProperty("--sz", (12 + Math.random() * 16) + "px");
+          h.style.setProperty("--tx", (Math.cos(ang) * r).toFixed(1) + "px");
+          h.style.setProperty("--ty", (Math.sin(ang) * r).toFixed(1) + "px");
+          h.style.setProperty("--rot", (Math.random() * 240 - 120).toFixed(1) + "deg");
+          h.style.setProperty("--scale", (0.5 + Math.random() * 0.9).toFixed(2));
+          h.style.setProperty("--dur", (1.1 + Math.random() * 0.9).toFixed(2) + "s");
+          h.style.setProperty("--dl", (Math.random() * 0.25).toFixed(2) + "s");
+          fxLayer.appendChild(h);
+          setTimeout(function () { h.remove(); }, 2600);
+        }
+      }
+
+      function createHeartReturn() {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight * 0.42;
+        const n = scaleCount(26);
+        for (let i = 0; i < n; i++) {
+          const h = document.createElement("div");
+          h.className = "ph return";
+          const ang = Math.random() * Math.PI * 2;
+          const r = 120 + Math.random() * 170;
+          const sx = cx + Math.cos(ang) * r;
+          const sy = cy + Math.sin(ang) * r;
+          h.style.left = sx + "px";
+          h.style.top = sy + "px";
+          h.style.setProperty("--sz", (10 + Math.random() * 12) + "px");
+          h.style.setProperty("--tx", (cx - sx).toFixed(1) + "px");
+          h.style.setProperty("--ty", (cy - sy).toFixed(1) + "px");
+          h.style.setProperty("--dur", (1.1 + Math.random() * 0.7).toFixed(2) + "s");
+          h.style.setProperty("--dl", (Math.random() * 0.5).toFixed(2) + "s");
+          fxLayer.appendChild(h);
+          setTimeout(function () { h.remove(); }, 2800);
+        }
+      }
+
+      function createHeartRain(n) {
+        for (let i = 0; i < n; i++) {
+          const h = document.createElement("div");
+          h.className = "cf";
+          h.style.left = Math.random() * 100 + "vw";
+          h.style.width = (10 + Math.random() * 10) + "px";
+          h.style.height = h.style.width;
+          h.style.background = "transparent";
+          h.style.backgroundImage = "var(--heart-svg)";
+          h.style.backgroundSize = "contain";
+          h.style.backgroundRepeat = "no-repeat";
+          h.style.setProperty("--c", "transparent");
+          h.style.setProperty("--x", ((Math.random() * 2 - 1) * 18) + "vw");
+          h.style.setProperty("--r", (Math.random() * 360 - 180) + "deg");
+          h.style.setProperty("--d", (3 + Math.random() * 2.5).toFixed(2) + "s");
+          h.style.setProperty("--dl", (Math.random() * 2).toFixed(2) + "s");
+          fxLayer.appendChild(h);
+          setTimeout(function () { h.remove(); }, 6000);
+        }
+      }
+
+      function createSparkles(n, cx, cy, spread) {
+        if (cx == null) cx = window.innerWidth / 2;
+        if (cy == null) cy = window.innerHeight * 0.42;
+        if (spread == null) spread = Math.min(window.innerWidth, window.innerHeight) * 0.4;
+        for (let i = 0; i < n; i++) {
+          const s = document.createElement("div");
+          s.className = "sp";
+          s.style.left = (cx + (Math.random() * 2 - 1) * spread) + "px";
+          s.style.top = (cy + (Math.random() * 2 - 1) * spread) + "px";
+          s.style.setProperty("--s", (3 + Math.random() * 4).toFixed(1) + "px");
+          s.style.setProperty("--d", (0.6 + Math.random() * 0.9).toFixed(2) + "s");
+          s.style.setProperty("--dl", (Math.random() * 1.2).toFixed(2) + "s");
+          fxLayer.appendChild(s);
+          setTimeout(function () { s.remove(); }, 2800);
+        }
+      }
+
+      function createConfetti(n) {
+        const cols = ["#ff2d63", "#ff8fab", "#d4af37", "#f4df9b", "#fbe9ee"];
+        for (let i = 0; i < n; i++) {
+          const c = document.createElement("div");
+          c.className = "cf";
+          c.style.left = Math.random() * 100 + "vw";
+          c.style.width = (5 + Math.random() * 6) + "px";
+          c.style.height = (8 + Math.random() * 9) + "px";
+          c.style.setProperty("--c", cols[i % cols.length]);
+          c.style.setProperty("--x", ((Math.random() * 2 - 1) * 28) + "vw");
+          c.style.setProperty("--r", (Math.random() * 720 - 360) + "deg");
+          c.style.setProperty("--d", (2.6 + Math.random() * 2).toFixed(2) + "s");
+          c.style.setProperty("--dl", (Math.random() * 1.6).toFixed(2) + "s");
+          fxLayer.appendChild(c);
+          setTimeout(function () { c.remove(); }, 5400);
+        }
+      }
+
+      function createButterfly(fx, fy, L, T, kind) {
+        const w = document.createElement("div");
+        w.className = "mini";
+        w.style.left = L + "px";
+        w.style.top = T + "px";
+        w.style.setProperty("--fx", fx.toFixed(1) + "px");
+        w.style.setProperty("--fy", fy.toFixed(1) + "px");
+        w.style.setProperty("--sc", (0.5 + Math.random() * 0.9).toFixed(2));
+        w.style.setProperty("--rot", (Math.random() * 80 - 40).toFixed(1) + "deg");
+        w.style.setProperty("--dur", (2.6 + Math.random() * 2.4).toFixed(2) + "s");
+        w.style.setProperty("--dl", (kind.delay).toFixed(2) + "s");
+        w.style.animationName = ["miniIn", "miniInCurve", "miniInSpin"][kind.i % 3];
+        w.innerHTML = BF_SVG;
+        w._L = L;
+        w._T = T;
+        fxLayer.appendChild(w);
+        minis.push(w);
+        return w;
+      }
+
+      function createButterflySwarm() {
+        const W = window.innerWidth;
+        const H = window.innerHeight;
+        const cx = W / 2;
+        const cy = H * 0.42;
+        const n = scaleCount(RM ? 16 : 46);
+        const corners = [[-1, -1], [1, -1], [-1, 1], [1, 1]];
+        for (let i = 0; i < n; i++) {
+          const rx = Math.random() * 2 - 1;
+          const ry = Math.random() * 2 - 1;
+          const L = cx + rx * Math.min(W * 0.44, 210);
+          const T = cy + ry * Math.min(H * 0.34, 240);
+          let fx, fy, delay;
+          if (i < 4) {
+            fx = corners[i][0] * (W * 0.85 + 140);
+            fy = corners[i][1] * (H * 0.75 + 140);
+            delay = i * 0.15;
+          } else {
+            const e = Math.floor(Math.random() * 4);
+            if (e === 0) { fx = (Math.random() * 2 - 1) * W; fy = -H * 0.85 - 120; }
+            else if (e === 1) { fx = (Math.random() * 2 - 1) * W; fy = H * 0.85 + 120; }
+            else if (e === 2) { fx = -W * 0.85 - 120; fy = (Math.random() * 2 - 1) * H; }
+            else { fx = W * 0.85 + 120; fy = (Math.random() * 2 - 1) * H; }
+            delay = 0.55 + Math.random() * 1.9;
+          }
+          createButterfly(fx - (L - cx), fy - (T - cy), L, T, { i: i, delay: delay });
+        }
+      }
+
+      function createButterflyConvergence(done) {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight * 0.42;
+        const list = minis.slice();
+        list.forEach(function (w) {
+          const sc = w.style.getPropertyValue("--sc") || "1";
+          w.style.animation = "none";
+          w.style.opacity = "0.92";
+          w.style.transform = "translate(0px,0px) scale(" + sc + ")";
+        });
+        void fxLayer.offsetWidth;
+        list.forEach(function (w, i) {
+          w.style.transition = "transform 1.15s cubic-bezier(.5,0,.75,0) " + (i * 8) + "ms, opacity .5s ease " + (650 + i * 8) + "ms";
+        });
+        requestAnimationFrame(function () {
+          list.forEach(function (w) {
+            const dx = cx - w._L;
+            const dy = cy - w._T;
+            w.style.transform = "translate(" + dx.toFixed(1) + "px," + dy.toFixed(1) + "px) scale(.08) rotate(" + Math.floor(Math.random() * 360) + "deg)";
+            w.style.opacity = "0";
+          });
+        });
+        setTimeout(function () {
+          list.forEach(function (w) { w.remove(); });
+          minis = [];
+          if (done) done();
+        }, 1600);
+      }
+
+      function celebrationButterflies(n) {
+        for (let i = 0; i < n; i++) {
+          const w = document.createElement("div");
+          w.className = "cbf";
+          w.innerHTML = BF_SVG;
+          w.style.left = Math.random() * 100 + "vw";
+          w.style.top = (18 + Math.random() * 72) + "vh";
+          w.style.setProperty("--sc", (0.5 + Math.random() * 0.8).toFixed(2));
+          w.style.setProperty("--d", (5 + Math.random() * 5).toFixed(2) + "s");
+          w.style.setProperty("--dl", (Math.random() * 2).toFixed(2) + "s");
+          w.style.setProperty("--x", ((Math.random() * 2 - 1) * 40) + "vw");
+          w.style.setProperty("--y", ((Math.random() * 2 - 1) * 24) + "vh");
+          fxLayer.appendChild(w);
+          setTimeout(function () { w.remove(); }, 13000);
+        }
+      }
+
+      // ----------------------------------------
+      // ambient
+      // ----------------------------------------
+      function initAmbient() {
+        const n = scaleCount(16);
+        for (let i = 0; i < n; i++) {
+          const d = document.createElement("i");
+          d.className = "dust";
+          d.style.left = Math.random() * 100 + "%";
+          d.style.top = Math.random() * 100 + "%";
+          d.style.setProperty("--s", (Math.random() * 2 + 1.4).toFixed(1) + "px");
+          d.style.setProperty("--o", (Math.random() * 0.32 + 0.12).toFixed(2));
+          d.style.setProperty("--dur", (Math.random() * 18 + 16).toFixed(1) + "s");
+          d.style.setProperty("--dl", (-Math.random() * 22).toFixed(1) + "s");
+          d.style.setProperty("--dx", (Math.random() * 40 - 20).toFixed(1) + "px");
+          ambient.appendChild(d);
+        }
+      }
+
+      // ----------------------------------------
+      // butterfly helpers
+      // ----------------------------------------
+      function bfReset() {
+        btfly.className = "";
+      }
+      function bfShow(mods) {
+        btfly.className = "bf--on" + (mods ? " " + mods : "");
+      }
+
+      // ----------------------------------------
+      // scenes
+      // ----------------------------------------
+      const enters = {};
+
+      enters.scene1 = async function (my) {
+        bfReset();
+        clearParticles();
+        glowCore.className = "glow-tiny";
+        await hold(1000);
+        if (!alive(my)) return;
+        document.getElementById("heartWrap").classList.add("in");
+        glowCore.className = "";
+        await hold(1200);
+        if (!alive(my)) return;
+        document.getElementById("s1line1").textContent = TEXT.opening.replace(/\.\.\.$/, "…").toLowerCase();
+        document.getElementById("s1line1").classList.add("show");
+        await hold(2600);
+        if (!alive(my)) return;
+        document.getElementById("s1tap").classList.add("show");
+      };
+
+      let heartTapped = false;
+      async function onHeartTap() {
+        if (heartTapped || current !== "scene1") return;
+        heartTapped = true;
+        startMusic();
+        const my = RUN;
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight * 0.42;
+
+        document.getElementById("s1line1").classList.remove("show");
+        document.getElementById("s1tap").classList.remove("show");
+        const hw = document.getElementById("heartWrap");
+        hw.style.animation = "none";
+        hw.style.transition = "opacity .7s ease, transform .7s ease";
+        hw.style.opacity = "0";
+        hw.style.transform = "scale(1.5)";
+
+        createHeartBurst(cx, cy, scaleCount(54));
+        await hold(950);
+        if (!alive(my)) return;
+
+        createHeartReturn();
+        glowCore.className = "";
+        void glowCore.offsetWidth;
+        glowCore.classList.add("glow-on");
+        await hold(1500);
+        if (!alive(my)) return;
+
+        revealFormed(document.getElementById("loveReveal"), "I LOVE YOU");
+        createSparkles(scaleCount(22), cx, cy, 130);
+        await hold(2700);
+        if (!alive(my)) return;
+
+        document.getElementById("loveReveal").classList.remove("show");
+        glowCore.classList.remove("glow-on");
+        await hold(1100);
+        if (!alive(my)) return;
+        goTo("scene2");
+      }
+
+      enters.scene2 = async function (my) {
+        clearParticles();
+        glowCore.className = "";
+        bfShow("bf--distant");
+        await hold(1000);
+        if (!alive(my)) return;
+        const ok = await story(document.getElementById("s2line"), [
+          { t: "I don't know…", h: 1900 },
+          { t: "if I'm the perfect person for you.", h: 2800 },
+          { t: "Maybe I'm not.", h: 2000 },
+          { t: "Maybe I'm not supposed to be perfect.", h: 3000 },
+          { t: "Maybe I'm supposed to be real.", h: 3000 },
+          { t: "Because love isn't about finding someone perfect.", h: 3400 },
+          { t: "It's about finding someone…", h: 2200 },
+          { t: "worth choosing.", h: 2900, c: "big" },
+          { t: "And somehow…", h: 2000 },
+          { t: "we found something beautiful in each other.", h: 3400, c: "big" },
+          { t: "Something real.", h: 2200 },
+          { t: "Something that feels like home.", h: 3000 }
+        ], my);
+        if (!ok || !alive(my)) return;
+        await hold(500);
+        goTo("scene3");
+      };
+
+      enters.scene3 = async function (my) {
+        bfShow("bf--distant");
+        void btfly.offsetWidth;
+        await hold(220);
+        if (!alive(my)) return;
+        btfly.classList.remove("bf--distant");
+        btfly.classList.add("bf--enter");
+        await hold(RM ? 400 : 3650);
+        if (!alive(my)) return;
+        btfly.classList.remove("bf--enter");
+        await hold(600);
+        if (!alive(my)) return;
+        const ok = await story(document.getElementById("s3line"), [
+          { t: "They say butterflies represent transformation…", h: 3100 },
+          { t: "But to me…", h: 1900 },
+          { t: TEXT.soul.replace(/\.\.\.$/, "…"), h: 3500, c: "big" },
+          { t: TEXT.butterfly, h: 4200, c: "big" }
+        ], my);
+        if (!ok || !alive(my)) return;
+        createSparkles(scaleCount(14), window.innerWidth / 2, window.innerHeight * 0.36, 90);
+        await hold(1500);
+        if (!alive(my)) return;
+        goTo("scene4");
+      };
+
+      enters.scene4 = async function (my) {
+        bfShow("");
+        veil.classList.add("veil-on");
+        await hold(700);
+        if (!alive(my)) return;
+        const ok = await story(document.getElementById("s4line"), [
+          { t: "And if one day…", h: 2000 },
+          { t: "long after this life…", h: 2500 },
+          { t: "my soul still remembered you…", h: 2900 },
+          { t: "I hope it would still know the way back to you.", h: 3500 },
+          { t: "Even if I could only return as a little butterfly…", h: 3500, c: "big" },
+          { t: "I would still find you.", h: 2900, c: "big" },
+          { t: "I would still stay close.", h: 2900 }
+        ], my);
+        if (!ok || !alive(my)) return;
+        await hold(500);
+        goTo("scene5");
+      };
+
+      enters.scene5 = async function (my) {
+        veil.classList.remove("veil-on");
+        bfShow("bf--up");
+        await hold(700);
+        if (!alive(my)) return;
+        const ok = await story(document.getElementById("s5line"), [
+          { t: "But before you answer anything…", h: 2700 },
+          { t: "I need you to see something.", h: 2700 }
+        ], my);
+        if (!ok || !alive(my)) return;
+        setLine(document.getElementById("s5line"), "🦋 click me…", "big");
+        btfly.classList.add("bf--clickable");
+        soulArmed = true;
+      };
+
+      async function onSoulTap() {
+        if (!soulArmed || current !== "scene5") return;
+        soulArmed = false;
+        const my = RUN;
+        btfly.classList.remove("bf--clickable");
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight * 0.3;
+        createSparkles(scaleCount(18), cx, cy, 70);
+        createHeartBurst(cx, cy + 20, scaleCount(10));
+        btfly.classList.add("bf--flyup");
+        document.getElementById("s5line").classList.remove("show");
+        await hold(RM ? 300 : 1550);
+        if (!alive(my)) return;
+        bfReset();
+        await hold(1350);
+        if (!alive(my)) return;
+        goTo("scene6");
+      }
+
+      enters.scene6 = async function (my) {
+        bfReset();
+        clearParticles();
+        fadeMusicTo(0.62, 3500);
+        createButterflySwarm();
+        await hold(2900);
+        if (!alive(my)) return;
+        goTo("scene7");
+      };
+
+      enters.scene7 = async function (my) {
+        await hold(450);
+        if (!alive(my)) return;
+        const ok = await story(document.getElementById("s7line"), [
+          { t: "Maybe that's what our story has been…", h: 3100 },
+          { t: "Two imperfect people…", h: 2400 },
+          { t: "finding their way toward each other.", h: 3100 },
+          { t: "Different days.", h: 1400 },
+          { t: "Different memories.", h: 1400 },
+          { t: "Different moments.", h: 1700 },
+          { t: "One beautiful bond.", h: 3000, c: "big" }
+        ], my);
+        if (!ok || !alive(my)) return;
+        await hold(300);
+        goTo("scene8");
+      };
+
+      enters.scene8 = async function (my) {
+        fadeMusicTo(0.74, 2600);
+        createButterflyConvergence();
+        await hold(1250);
+        if (!alive(my)) return;
+        glowCore.className = "";
+        void glowCore.offsetWidth;
+        glowCore.classList.add("glow-on");
+        await hold(750);
+        if (!alive(my)) return;
+        flash.classList.add("flash-on");
+        await hold(720);
+        if (!alive(my)) return;
+        goTo("scene9");
+      };
+
+      enters.scene9 = async function (my) {
+        clearParticles();
+        glowCore.classList.remove("glow-on");
+        await hold(80);
+        flash.classList.remove("flash-on");
+        createSparkles(scaleCount(40), window.innerWidth / 2, window.innerHeight * 0.45, Math.min(window.innerWidth, window.innerHeight) * 0.5);
+        celebrationButterflies(scaleCount(8));
+        revealFormed(document.getElementById("s9a"), "WILL YOU");
+        await hold(2300);
+        if (!alive(my)) return;
+        revealFormed(document.getElementById("s9b"), "MARRY ME?");
+        createSparkles(scaleCount(26), window.innerWidth / 2, window.innerHeight * 0.5, 170);
+        await hold(4400);
+        if (!alive(my)) return;
+        goTo("scene10");
+      };
+
+      enters.scene10 = async function (my) {
+        clearParticles();
+        document.getElementById("s9a").classList.remove("show");
+        document.getElementById("s9b").classList.remove("show");
+        await hold(300);
+        const ok = await story(document.getElementById("s10line"), [
+          { t: "Because I don't need perfect.", h: 2600 },
+          { t: "I need real.", h: 2000 },
+          { t: "I need us.", h: 2200 },
+          { t: "I want to keep choosing you…", h: 2600 },
+          { t: "again and again.", h: 2600, c: "big" },
+          { t: NAMES_HTML, html: true, h: 3400, c: "names" },
+          { t: "If you'll let me…", h: 2200 },
+          { t: "I'll spend my life building something beautiful with you.", h: 3800 }
+        ], my);
+        if (!ok || !alive(my)) return;
+        await hold(300);
+        goTo("scene11");
+      };
+
+      enters.scene11 = async function (my) {
+        bfReset();
+        clearParticles();
+        document.getElementById("choice").classList.remove("in");
+        document.getElementById("s11heart").classList.add("in");
+        await hold(600);
+        const ok = await story(document.getElementById("s11line"), [
+          { t: "So… " + HER_NAME, h: 3000, c: "names" },
+          { t: "will you walk beside me…", h: 2700 },
+          { t: "through every beautiful chapter still waiting for us?", h: 3700 },
+          { t: "Will you be my partner…", h: 2700 }
+        ], my);
+        if (!ok || !alive(my)) return;
+        setLine(document.getElementById("s11line"), "for life?", "big");
+        await hold(700);
+        if (!alive(my)) return;
+        document.getElementById("choice").classList.add("in");
+      };
+
+      enters.sceneSuccess = async function (my) {
+        clearParticles();
+        bfReset();
+        fadeMusicTo(0.92, 1400);
+        stage.classList.add("warm");
+        glowCore.className = "";
+        void glowCore.offsetWidth;
+        glowCore.classList.add("glow-on", "glow-warm");
+        document.getElementById("succHeart");
+        createConfetti(scaleCount(36));
+        createHeartBurst(window.innerWidth / 2, window.innerHeight * 0.5, scaleCount(60));
+        createSparkles(scaleCount(40));
+        celebrationButterflies(scaleCount(20));
+        createHeartRain(scaleCount(14));
+        const ok = await story(document.getElementById("succLine"), [
+          { t: "She said YES 🎉", h: 3400, c: "hero" },
+          { t: NAMES_HTML, html: true, h: 3200, c: "names" },
+          { t: "forever starts today.", h: 2900 },
+          { t: "And if my soul ever has to find you again…", h: 3200 }
+        ], my);
+        if (!ok || !alive(my)) return;
+        bfShow("bf--cross");
+        await hold(RM ? 400 : 2700);
+        if (!alive(my)) return;
+        setLine(document.getElementById("succLine"), "I already know where home is.", "big");
+        celebrationButterflies(scaleCount(10));
+        await hold(RM ? 500 : 4200);
+        if (!alive(my)) return;
+        goTo("sceneLoveMemory");
+      };
+
+      function setLineHTML(lineEl, html, cls) {
+        lineEl.innerHTML = html;
+        lineEl.className = cls;
+        void lineEl.offsetWidth;
+        lineEl.classList.add("show");
+      }
+
+      enters.sceneLoveMemory = async function (my) {
+        bfReset();
+        clearParticles();
+        stage.classList.remove("warm");
+        crossToMemoryMusic();
+
+        const imgWrap = document.getElementById("lmImageWrap");
+        imgWrap.classList.add("in");
+        await hold(1500);
+        if (!alive(my)) return;
+
+        setLine(document.getElementById("lmRadhaLine"), "என் ராதா… ❤️", "names");
+        await hold(2600);
+        if (!alive(my)) return;
+
+        const poemSteps = [
+          ["poem1", 2600], ["poem2", 2600], ["poem3", 2800], ["poem4", 2800],
+          ["poem5", 2600], ["poem6", 3400], ["poem7", 2800], ["poem8", 3600],
+          ["poem9", 3200], ["poem10", 2000], ["poem11", 2600], ["poem12", 3200],
+          ["poem13", 3400]
+        ];
+        for (let i = 0; i < poemSteps.length; i++) {
+          if (!alive(my)) return;
+          document.getElementById(poemSteps[i][0]).classList.add("show");
+          await hold(poemSteps[i][1]);
+        }
+        if (!alive(my)) return;
+
+        // a slow, deliberate pause before the final cinematic confession
+        await hold(2600);
+        if (!alive(my)) return;
+
+        setLine(document.getElementById("lmClimax1"), "என் ராதா…", "lm-climax-line tamil-text");
+        await hold(2600);
+        if (!alive(my)) return;
+
+        setLineHTML(
+          document.getElementById("lmClimax2"),
+          "இந்த வாழ்க்கையில் மட்டும் அல்ல…<br>எல்லா வாழ்க்கையிலும்<br>உன்னையே காதலிக்க ஆசைப்படுகிறேன்.",
+          "lm-climax-line tamil-text"
+        );
+        await hold(3800);
+        if (!alive(my)) return;
+
+        setLineHTML(
+          document.getElementById("lmClimax3"),
+          "நீ என் காதலாக வந்ததற்கு<br>நன்றி…",
+          "lm-climax-line tamil-text"
+        );
+        await hold(3000);
+        if (!alive(my)) return;
+
+        setLineHTML(
+          document.getElementById("lmHeroFinal"),
+          "என் உயிருக்கு கிடைத்த<br>அழகான வரம் — நீ. ❤️",
+          "lm-hero-line tamil-text"
+        );
+        await hold(4400);
+        if (!alive(my)) return;
+
+        // the soul takes flight one more time — graceful curved path, natural wing beat
+        bfShow("bf--cross");
+        await hold(RM ? 500 : 6200);
+        if (!alive(my)) return;
+        bfReset();
+
+        await hold(1000);
+        if (!alive(my)) return;
+        document.getElementById("replyBlock").classList.add("show");
+      };
+
+      // fires once a saved reply (fresh submit or returning-visitor load) is on screen
+      window.addEventListener("loveReplySaved", async function () {
+        if (current !== "sceneLoveMemory") return;
+        const my = RUN;
+        await hold(1700);
+        if (!alive(my)) return;
+        setLine(document.getElementById("lmFinalLine1"), "உன் வார்த்தைகள் என் வாழ்நாள் நினைவாக இருக்கும்… ❤️", "big tamil-text");
+        await hold(3400);
+        if (!alive(my)) return;
+        setLine(document.getElementById("lmFinalLine2"), NAMES, "names");
+        await hold(2200);
+        if (!alive(my)) return;
+        bfShow("bf--cross");
+      });
+
+      // ----------------------------------------
+      // interaction wiring
+      // ----------------------------------------
+      document.getElementById("heartBtn").addEventListener("click", onHeartTap);
+      btfly.addEventListener("pointerup", function (e) {
+        if (!soulArmed || current !== "scene5") return;
+        e.preventDefault();
+        e.stopPropagation();
+        onSoulTap();
+      });
+
+      const yesBtn = document.getElementById("yesBtn");
+      const waitBtn = document.getElementById("waitBtn");
+
+      yesBtn.addEventListener("click", function () {
+        if (yesBtn.disabled) return;
+        yesBtn.disabled = true;
+        yesBtn.style.pointerEvents = "none";
+        waitBtn.style.pointerEvents = "none";
+        goTo("sceneSuccess");
+      });
+
+      let dodges = 0;
+      function dodge() {
+        dodges++;
+        const maxX = Math.min(window.innerWidth * 0.26, 92);
+        const dx = (Math.random() * 2 - 1) * maxX;
+        const dy = Math.random() * 42 - 8;
+        const scale = Math.max(0.82, 1 - dodges * 0.04);
+        waitBtn.style.transform = "translate(" + dx.toFixed(0) + "px," + dy.toFixed(0) + "px) scale(" + scale.toFixed(2) + ")";
+      }
+      waitBtn.addEventListener("mouseenter", function () { if (HOVER) dodge(); });
+      waitBtn.addEventListener("click", function (e) { e.preventDefault(); dodge(); });
+      waitBtn.addEventListener("touchstart", function (e) { e.preventDefault(); dodge(); }, { passive: false });
+
+      // ----------------------------------------
+      // hidden dev mode  // REMOVE BEFORE SENDING TO RECIPIENT
+      // ----------------------------------------
+      function devAdvance() {
+        const i = order.indexOf(current);
+        goTo(order[Math.min(i + 1, order.length - 1)]);
+      }
+      document.addEventListener("keydown", function (e) {
+        if (e.shiftKey && (e.key === "S" || e.key === "s")) devAdvance();
+      });
+      document.getElementById("devSkip").addEventListener("click", devAdvance);
+
+      // ----------------------------------------
+      // boot
+      // ----------------------------------------
+      initAmbient();
+      goTo("scene1");
+
+    })();
+  </script>
+
+  <!-- ====================================================================
+       FIREBASE CLOUD FIRESTORE — SAVE & SYNC HER REPLY ACROSS DEVICES
+       This is a separate ES module because the Firebase Web SDK is
+       distributed as ES modules. It does not touch or replace any of
+       the proposal animation code above.
+  ==================================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+    // ==================================================================
+    // PASTE YOUR FIREBASE WEB APP CONFIGURATION HERE
+    // Firebase Console → Project settings → Your apps → Web app → SDK config
+    // This is the public Web SDK config, not a secret. Never put an Admin
+    // SDK / service-account private key here.
+    // ==================================================================
+    const FIREBASE_CONFIG = {
+      apiKey: "AIzaSyBFg07wN3VeZ97zVLp1IVjuE-KpT9nY690",
+      authDomain: "kishore-gops-love.firebaseapp.com",
+      projectId: "kishore-gops-love",
+      storageBucket: "kishore-gops-love.firebasestorage.app",
+      messagingSenderId: "648872417390",
+      appId: "1:648872417390:web:612a09741a87cf3e396e7f"
+    };
+
+    const HER_NAME = "PRIYANKA";
+    const LOCAL_REPLY_KEY = "kishore_gops_love_reply";
+
+    // Set to true only while you are testing on your own device.
+    // Set back to false (or delete this whole block, see instructions
+    // below) before sending the link to her.
+    const OWNER_PREVIEW = false;
+
+    let db = null;
+    let firebaseReady = false;
+    let endingRevealed = false;
+
+    const statusEl = document.getElementById("firebaseStatus");
+    function setStatus(msg) { if (statusEl) statusEl.textContent = msg || ""; }
+
+    function isConfigured() {
+      return !!FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf("PASTE_") !== 0;
+    }
+
+    function replyRef() {
+      return doc(db, "proposalReplies", "gops");
+    }
+
+    async function initFirebase() {
+      if (!isConfigured()) {
+        console.warn("Firebase config not set — using local fallback only.");
+        loadLocalIntoUI();
+        return;
+      }
+      try {
+        const app = initializeApp(FIREBASE_CONFIG);
+        const auth = getAuth(app);
+        db = getFirestore(app);
+        await signInAnonymously(auth);
+        firebaseReady = true;
+        listenForReply();
+        trySyncPendingLocal();
+      } catch (err) {
+        console.error("Firebase init/auth failed:", err);
+        firebaseReady = false;
+        loadLocalIntoUI();
+      }
+    }
+
+    function listenForReply() {
+      if (!db) return;
+      try {
+        onSnapshot(replyRef(), function (snap) {
+          if (snap.exists()) {
+            const data = snap.data();
+            renderSavedReply(data);
+            try { localStorage.removeItem(LOCAL_REPLY_KEY); } catch (e) { /* ignore */ }
+          }
+        }, function (err) {
+          console.error("Reply listener error:", err);
+        });
+      } catch (err) {
+        console.error("Failed to attach Firestore listener:", err);
+      }
+    }
+
+    async function loadSavedReplyOnce() {
+      if (!db) return null;
+      try {
+        const snap = await getDoc(replyRef());
+        if (snap.exists()) return snap.data();
+      } catch (err) {
+        console.error("loadSavedReplyOnce failed:", err);
+      }
+      return null;
+    }
+
+    async function saveReply(message) {
+      if (!firebaseReady || !db) {
+        saveLocal(message);
+        throw new Error("firebase-not-ready");
+      }
+      try {
+        await setDoc(replyRef(), {
+          name: HER_NAME,
+          message: message,
+          timestamp: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        try { localStorage.removeItem(LOCAL_REPLY_KEY); } catch (e) { /* ignore */ }
+        return true;
+      } catch (err) {
+        console.error("saveReply failed:", err);
+        saveLocal(message);
+        throw err;
+      }
+    }
+
+    function saveLocal(message) {
+      try {
+        localStorage.setItem(LOCAL_REPLY_KEY, JSON.stringify({
+          name: HER_NAME,
+          message: message,
+          savedAt: Date.now(),
+          pending: true
+        }));
+      } catch (e) { /* ignore */ }
+    }
+
+    function loadLocalIntoUI() {
+      try {
+        const raw = localStorage.getItem(LOCAL_REPLY_KEY);
+        if (raw) {
+          const data = JSON.parse(raw);
+          if (data && data.message) renderSavedReply({ message: data.message });
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    async function trySyncPendingLocal() {
+      try {
+        const raw = localStorage.getItem(LOCAL_REPLY_KEY);
+        if (!raw || !firebaseReady || !db) return;
+        const data = JSON.parse(raw);
+        if (!data || !data.message) return;
+        await setDoc(replyRef(), {
+          name: HER_NAME,
+          message: data.message,
+          timestamp: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+        localStorage.removeItem(LOCAL_REPLY_KEY);
+      } catch (err) {
+        console.error("Pending local sync failed:", err);
+      }
+    }
+    window.addEventListener("online", trySyncPendingLocal);
+
+    // ---------------- UI ----------------
+    function renderSavedReply(data) {
+      const card = document.getElementById("savedReplyCard");
+      const msgEl = document.getElementById("savedReplyMessage");
+      if (!card || !msgEl || !data) return;
+      msgEl.textContent = data.message || "";
+      card.style.display = "flex";
+      card.classList.remove("show");
+      void card.offsetWidth;
+      card.classList.add("show");
+      if (!endingRevealed) {
+        endingRevealed = true;
+        window.dispatchEvent(new CustomEvent("loveReplySaved"));
+      }
+    }
+
+    const textarea = document.getElementById("loveReply");
+    const sendBtn = document.getElementById("sendReplyBtn");
+    const replyNote = document.getElementById("replyNote");
+
+    function showNote(text) {
+      if (!replyNote) return;
+      replyNote.textContent = text;
+      replyNote.classList.add("show");
+    }
+
+    if (sendBtn) {
+      sendBtn.addEventListener("click", async function () {
+        if (sendBtn.disabled) return;
+        const raw = textarea ? textarea.value : "";
+        const message = raw.trim().slice(0, 1000);
+        if (!message) {
+          showNote("என் ராதா… உன் மனதில் ஒரு வார்த்தையாவது எழுதிவிடு ❤️");
+          return;
+        }
+        sendBtn.disabled = true;
+        showNote("உன் வார்த்தைகளை என் இதயம் சேமித்துக்கொண்டிருக்கிறது… ❤️");
+        try {
+          await saveReply(message);
+          showNote("உன் வார்த்தைகள் என் இதயத்தில் என்றும் இருக்கும்… ❤️");
+          renderSavedReply({ message: message });
+        } catch (err) {
+          if (err && (err.message === "firebase-not-ready" || err.code)) {
+            showNote("இணைய இணைப்பு கிடைத்ததும் உன் பதில் மீண்டும் அனுப்பப்படும் ❤️");
+            renderSavedReply({ message: message });
+          } else {
+            showNote("ஒரு சிறிய நேரம் காத்திருக்கலாம்… ❤️");
+          }
+        } finally {
+          sendBtn.disabled = false;
+        }
+      });
+    }
+
+    // ---------------- owner-only preview (dev use, safe to leave false) ----------------
+    if (OWNER_PREVIEW) {
+      const btn = document.createElement("button");
+      btn.id = "ownerPreviewBtn";
+      btn.type = "button";
+      btn.textContent = "View saved reply";
+      btn.addEventListener("click", async function () {
+        const data = await loadSavedReplyOnce();
+        if (data) {
+          const when = data.updatedAt && data.updatedAt.toDate ? data.updatedAt.toDate().toString() : "n/a";
+          alert("Name: " + data.name + "\nMessage: " + data.message + "\nUpdated: " + when);
+        } else {
+          alert("No saved reply yet.");
+        }
+      });
+      document.body.appendChild(btn);
+    }
+
+    initFirebase();
+  </script>
+</body>
+
+</html>
